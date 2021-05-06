@@ -30,8 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URL'),
+        'client_id' => "910869966775-d2bgac7863mg28sqkrbei7r52ima7kqk.apps.googleusercontent.com",
+        'client_secret' => "fPxUi7qpjzr5SqEGSmkIWCLF",
+        'redirect' =>   "http://localhost:3000/auth/google",
     ],
 ];

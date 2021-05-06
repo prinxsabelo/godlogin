@@ -21,7 +21,6 @@ class LoginController extends Controller
     //
     public function googleRegUrl()
     {
-        
         return Response::json([
             'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
         ]);
@@ -29,7 +28,9 @@ class LoginController extends Controller
 
     public function handleGoogleRegCallback()
     {
+       
         $user = Socialite::driver('google')->stateless()->user();
+      
         $user->social_provider = 'google';
         $user->lastname = $user->user['family_name'];
         $user->firstname = $user->user['given_name'];
