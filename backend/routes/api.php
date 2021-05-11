@@ -18,6 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::middleware('api')->group(function () {
-    Route::get('auth/google/url', 'App\Http\Controllers\Api\Auth\LoginController@googleRegUrl');
-    Route::get('auth/google/callback', 'App\Http\Controllers\Api\Auth\LoginController@handleGoogleRegCallback');
+    Route::get('auth/google/url', 'App\Http\Controllers\Api\AuthController@googleRegUrl');
+    Route::get('auth/google/callback', 'App\Http\Controllers\Api\AuthController@handleGoogleRegCallback');
+    Route::post('auth/register', 'App\Http\Controllers\Api\AuthController@Register');
+    Route::post('auth/login', 'App\Http\Controllers\Api\AuthController@Login');
 });

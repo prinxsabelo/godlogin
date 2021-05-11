@@ -14,7 +14,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 
 // use App\Http\Controllers\Controller;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -55,5 +55,9 @@ class LoginController extends Controller
         }
         return json_encode($user);
         // Auth::login($user);
+    }
+    public function Register(Request $request)
+    {
+        echo json_encode($request['lastname']);
     }
 }
