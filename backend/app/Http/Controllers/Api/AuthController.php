@@ -13,55 +13,14 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use JWTAuth;
 // use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
     //
-    public function googleRegUrl()
-    {
-        return Response::json([
-            'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
-        ]);
-    }
-
-    public function handleGoogleRegCallback()
-    {
-       
-        $user = Socialite::driver('google')->stateless()->user();
-        // return json_encode($user);
-        $user->social_provider = 'google';
-        isset($user->user['family_name']) ? $user->lastname = $user->user['family_name'] :  $user->lastname = '';
-
-        isset($user->user['given_name']) ? $user->firstname = $user->user['given_name'] :  $user->firstname = '';
-
-        return $this->SocialUser($user);
-    }
-
-    public function SocialUser($data)
-    {
-        $user = User::where('email', '=', $data->email)->first();
-        if (!$user) {
-            
-            // $response = ["message" => "You have no account yet.."];
-            // return response($response, 422);
-            $user = new User();
-            $user->lastname = $data->lastname;
-            $user->firstname = $data->firstname;
-            $user->email = $data->email;
-            $user->social_id = $data->id;
-            $user->avatar = $data->avatar;
-            $user->social_provider = $data->social_provider;
-            $user->password = encrypt('form_test');
-            $user->save();
-            
-        }
-                  // Authentication passed...
-        $response['success'] = true;
-        return json_encode($response);
-    }
+   
     public function Register(Request $request)
     {
         $validator = $request->validate([
@@ -88,15 +47,51 @@ class AuthController extends Controller
     public function Login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            $response['success'] = true;
-            return json_encode($response);
-        }else{
-            $response['success'] = false;
-            $response = ["message" => "Invalid login details.."];
+        $token = auth()->attempt($credentials);
+        if(! $token = auth()->attempt($credentials))
+        {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json([
+            'user' => auth()->user(),
+            'token' => $token,
+        ]);
+       
+        
+    }  
+    public function googleRegUrl()
+    {
+        return Response::json([
+            'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
+        ]);
+    }
+    public function handleGoogleRegCallback()
+    {
+       
+        $user = Socialite::driver('google')->stateless()->user();
+        // return json_encode($user);
+        $user->social_provider = 'google';
+        isset($user->user['family_name']) ? $user->lastname = $user->user['family_name'] :  $user->lastname = '';
+
+        isset($user->user['given_name']) ? $user->firstname = $user->user['given_name'] :  $user->firstname = '';
+        return $this->socialUser($user);
+    }
+    public function socialUser($checkUser)
+    {
+        $user = User::where('email', '=', $checkUser->email)->first();
+        if (!$user) {
+            $response = ["message" => "You have no account yet.."];
             return response($response, 422);
         }
-        
-    }   
+        // $token = auth()->attempt(['email' => $user->email, 'password' => $user->password]);
+        $token = auth()->login($user);
+        if(!$token)
+        {
+            return response()->json(['error' => 'Unauthorized', 'user' => $user], 401);
+        }
+        return response()->json([
+            'user' => auth()->user(),
+            'token' => $token,
+        ]);
+    }
 }

@@ -1,20 +1,35 @@
-import axios from "axios";
-import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import Cookies from "js-cookie";
 import useSignUpForm from "./CustomHooks";
+
+import AuthApi from "./context/AuthApi";
 import Social from "./Social";
+import { NavLink } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
+    let fetcher = Cookies.get("xxx");
+    console.log(fetcher);
+    const Auth = useContext(AuthApi);
     const handleLogin = async (e) => {
+        Auth.setAuth(true);
+        Cookies.set("user", "loginTrue");
+
         e.preventDefault();
         const { email, password } = inputs;
-        await axios({
+        let response = await axios({
             method: "post",
-            url: "/api/auth/login",
+            url: "/api/login",
             data: {
                 email,
                 password,
             },
         });
+        if (response.data) {
+            const { token } = response.data;
+            Cookies.set("token", token);
+        }
+        console.log(response.data);
     };
     const { inputs, handleInputChange } = useSignUpForm();
     return (
@@ -27,7 +42,7 @@ const Login = () => {
                             type="email"
                             className="form-control"
                             placeholder="Email Address"
-                            required
+                            // required
                             name="email"
                             value={inputs.email}
                             onChange={handleInputChange}
@@ -38,7 +53,8 @@ const Login = () => {
                             type="password"
                             className="form-control"
                             placeholder="Password.."
-                            required
+                            // required
+                            autoComplete="true"
                             name="password"
                             value={inputs.password}
                             onChange={handleInputChange}

@@ -11,7 +11,7 @@ const Register = () => {
         const { firstname, lastname, email, password } = inputs;
         await axios({
             method: "post",
-            url: "/api/auth/register",
+            url: "/api/register",
             data: {
                 firstname,
                 lastname,
@@ -80,6 +80,7 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+          
         </form>
     );
 };
